@@ -8,7 +8,7 @@ export const handleAddCommand = async (args: CommandArgs): Promise<void> => {
   
   if (!title) {
     displayError('Missing task title')
-    console.log('Usage: npx kanban add "Task title" [--desc "Task description"]');
+    console.log('Usage: kanli add "Task title" [--desc "Task description"]');
     return;
   }
 

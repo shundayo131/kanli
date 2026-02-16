@@ -31,59 +31,58 @@ export const displayTask = (task: Task): void => {
   console.log('');
 }
 
-// Display a list of tasks
-export const displayTaskList = (tasks: Task[], state: string | null = null): void => {
+// Display tasks for a single section
+const displaySection = (tasks: Task[]): void => {
   if (tasks.length === 0) {
-    if (state) {
-      console.log(chalk.dim(`No tasks in ${state} state.`));
-    } else {
-      console.log(chalk.dim('No tasks found.'));
-    }
-    return;
-  }
-
-  // Group tasks by state if no specific state is specified
-  if (!state) {
-    // Find all tasks in 'todo' state
-    const todoTasks = tasks.filter(task => task.state === 'todo');
-    if (todoTasks.length > 0) {
-      console.log(`\n${chalk.yellow.bold('📋 TODO:')}`);
-      todoTasks.forEach(task => {
-        console.log(`  ${chalk.bold(task.id)} ${task.title}`);
-      });
-    }
-
-    // Find all tasks in 'in_progress' state
-    const inProgressTasks = tasks.filter(task => task.state === 'in_progress');
-    if (inProgressTasks.length > 0) {
-      console.log(`\n${chalk.blue.bold('🔄 IN PROGRESS:')}`);
-      inProgressTasks.forEach(task => {
-        console.log(`  ${chalk.bold(task.id)} ${task.title}`);
-      });
-    }
-
-    // Find all tasks in 'done' state
-    const doneTasks = tasks.filter(task => task.state === 'done');
-    if (doneTasks.length > 0) {
-      console.log(`\n${chalk.green.bold('✅ DONE:')}`);
-      doneTasks.forEach(task => {
-        console.log(`  ${chalk.bold(task.id)} ${task.title}`);
-      });
-    }
+    console.log(`  ${chalk.dim('No tasks')}`);
   } else {
-    // Display tasks for a specific state
-    const stateColor = stateColors[state as keyof typeof stateColors] || chalk.white;
-    console.log(`\n${stateColor.bold(`Tasks in ${state} state:`)}`);
-    
     tasks.forEach(task => {
-      console.log(`  ${chalk.bold(task.id)} ${task.title}`);
+      console.log(`  ${chalk.bold(task.id)}  ${task.title}`);
       if (task.description) {
-        console.log(`    ${chalk.gray(task.description)}`);
+        console.log(`         ${chalk.gray(task.description)}`);
       }
     });
   }
-  
-  console.log(''); // Add a blank line for better readability
+}
+
+// Display a list of tasks
+export const displayTaskList = (tasks: Task[], state: string | null = null): void => {
+  // Display tasks for a specific state filter
+  if (state) {
+    const stateColor = stateColors[state as keyof typeof stateColors] || chalk.white;
+    console.log(`\n${stateColor.bold(`Tasks in ${state} state:`)}`);
+
+    if (tasks.length === 0) {
+      console.log(`  ${chalk.dim('No tasks')}`);
+    } else {
+      tasks.forEach(task => {
+        console.log(`  ${chalk.bold(task.id)}  ${task.title}`);
+        if (task.description) {
+          console.log(`         ${chalk.gray(task.description)}`);
+        }
+      });
+    }
+    console.log('');
+    return;
+  }
+
+  // Board view — always show all three columns
+  const todoTasks = tasks.filter(task => task.state === 'todo');
+  const inProgressTasks = tasks.filter(task => task.state === 'in_progress');
+  const doneTasks = tasks.filter(task => task.state === 'done');
+
+  console.log(`\n${chalk.yellow.bold(`📋 TODO (${todoTasks.length})`)}`);
+  displaySection(todoTasks);
+
+  console.log(`\n${chalk.blue.bold(`🔄 IN PROGRESS (${inProgressTasks.length})`)}`);
+  displaySection(inProgressTasks);
+
+  console.log(`\n${chalk.green.bold(`✅ DONE (${doneTasks.length})`)}`);
+  displaySection(doneTasks);
+
+  // Summary footer
+  const total = tasks.length;
+  console.log(`\n${chalk.dim(`${total} task${total !== 1 ? 's' : ''}: ${todoTasks.length} todo, ${inProgressTasks.length} in progress, ${doneTasks.length} done`)}`);
 }
 
 // Display success message
@@ -100,6 +99,6 @@ export const displayError = (message: string | {error: string}): void => {
 // Display initialization instructions
 export const displayInitInstructions = (): void => {
   console.log(`\nTo get started with the kanban board, run:`);
-  console.log(`  ${chalk.cyan('npx kanban init')}`);
+  console.log(`  ${chalk.cyan('kanli init')}`);
   console.log(`\nThis will set up a kanban board in your current directory.`);
 }

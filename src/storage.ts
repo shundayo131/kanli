@@ -1,6 +1,5 @@
 // JSON file storage operations 
 
-import { error } from 'console';
 import fs from 'fs/promises';
 import path from 'path';
 import { Task, TaskState, InitResult } from './types.js';
@@ -62,7 +61,7 @@ const ensureInitialized = async (): Promise<void> => {
     await fs.access(DATA_DIR);
     await fs.access(path.join(DATA_DIR, TASKS_FILE));
   } catch {
-    throw new Error('Kanban board is not initialized. Run "npx kanban init" first.');
+    throw new Error('Kanban board is not initialized. Run "kanli init" first.');
   }
 }
 
@@ -73,7 +72,7 @@ const readTasks = async (): Promise<Task[]> => {
     const data = await fs.readFile(tasksPath, 'utf-8');
     return JSON.parse(data);
   } catch (e) {
-    throw new Error(`Cound not read tasks: ${e instanceof Error ? e.message : String(e)}`);
+    throw new Error(`Could not read tasks: ${e instanceof Error ? e.message : String(e)}`);
   }
 }
 
@@ -141,7 +140,7 @@ export const moveTask = async (id: string, state: string): Promise<Task> => {
     
     // if state is invalid, return error 
     if (!['todo', 'in_progress', 'done'].includes(state)) {
-      throw new Error('Invalide state. Must be "todo", "in_progress", or "done"');
+      throw new Error('Invalid state. Must be "todo", "in_progress", or "done"');
     }
     
     const tasks = await readTasks();
@@ -161,6 +160,17 @@ export const moveTask = async (id: string, state: string): Promise<Task> => {
   } catch (e) {
     throw new Error(`Could not move task: ${e instanceof Error ? e.message : String(e)}`);
   }
+}
+
+// Get a single task by ID
+export const getTask = async (id: string): Promise<Task> => {
+  await ensureInitialized();
+  const tasks = await readTasks();
+  const task = tasks.find(task => task.id === id);
+  if (!task) {
+    throw new Error(`Task with ID ${id} not found`);
+  }
+  return task;
 }
 
 export const completeTask = (id: string): Promise<Task> => {

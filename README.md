@@ -1,14 +1,14 @@
-### Kanban CLI
+### Kanli
 
-A simple command line Kanban board for task management. 
+Kanli (管理) means 'manage' in Japanese. This is a simple command line Kanban board to manage your programming tasks. 
 
 ### Version 
 
-v0.1.1 (MVP - TypeScript)
+v0.1.1
 
 ### Tech Stack 
 
-- JavaScript 
+- TypeScript  
 - Node.js (ES Modules)
 - minimist (command-line argument parsing)
 - Chalk (terminal output)

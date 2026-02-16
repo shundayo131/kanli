@@ -1,32 +1,31 @@
 import { moveTask } from "../storage.js";
 import { displayError, displaySuccess, displayTask } from "../display.js";
-import { CommandArgs } from "../types.js";
+import { CommandArgs, resolveState } from "../types.js";
 
 export const handleMoveCommand = async (args: CommandArgs): Promise<void> => {
-  // Receive task id and state 
   const id = args._[1];
-  const state = args._[2];
+  const stateInput = args._[2];
 
   if (!id) {
-    displayError('missing task ID');
-    console.log('Usage: npx kanbdan move <id> <state>');
-  }
-
-  // if there is no state, return error 
-  if (!state) {
-    displayError('missing state');
-    console.log('Usage: npx kanbdan move <id> <state>');
-  }
-
-  // if state is not correct, return error 
-  if (!['todo', 'in_progress', 'done'].includes(state)) {
-    displayError('Invalid state. Must be "todo", "in_progress", or "done"');
+    displayError('Missing task ID');
+    console.log('Usage: kanli move <id> <state>');
     return;
   }
 
-  // call moveTask by passing task id and state 
+  if (!stateInput) {
+    displayError('Missing state');
+    console.log('Usage: kanli move <id> <state>');
+    return;
+  }
+
+  const state = resolveState(stateInput);
+  if (!state) {
+    displayError('Invalid state. Must be "todo", "in_progress" (or wip), or "done"');
+    return;
+  }
+
   try {
-    const task = await moveTask(id, state)
+    const task = await moveTask(id, state);
     displaySuccess(`Task moved to ${state}`);
     displayTask(task);
   } catch (e) {

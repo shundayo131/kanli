@@ -7,7 +7,7 @@ export const handleCompleteCommand = async (args: CommandArgs): Promise<void> =>
   
   if (!id) {
     displayError('Missing task ID');
-    console.log('Usage: npx kanban complete <id>');
+    console.log('Usage: kanli complete <id>');
     return;
   }
 
