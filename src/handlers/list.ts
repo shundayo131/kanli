@@ -1,20 +1,23 @@
 import { listTasks } from '../storage.js';
 import { displayTaskList, displayError } from '../display.js';
-import { CommandArgs } from '../types.js';
+import { CommandArgs, resolveState } from '../types.js';
 
 export const handleListCommand = async (args: CommandArgs): Promise<void> => {
-  const state = args._[1];
+  const stateInput = args._[1];
 
-  // If state includes but not 'todo', 'in_progress', or 'done', return display error 
-  if (state && !['todo', 'in_progress', 'done'].includes(state)) {
-    displayError('Invalid state. Must be "todo", "in_progress", or "done"');
-    return;
+  let state: string | null = null;
+  if (stateInput) {
+    state = resolveState(stateInput);
+    if (!state) {
+      displayError('Invalid state. Must be "todo", "in_progress" (or wip), or "done"');
+      return;
+    }
   }
 
   try {
-    const tasks = await listTasks(state);   
-    displayTaskList(tasks, state); 
+    const tasks = await listTasks(state);
+    displayTaskList(tasks, state);
   } catch (e) {
     displayError(e instanceof Error ? e.message : String(e));
-  } 
+  }
 }

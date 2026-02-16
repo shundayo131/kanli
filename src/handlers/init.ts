@@ -7,8 +7,8 @@ export const handleInitCommand = async (): Promise<void> => {
   
     if (result.success) {
       displaySuccess(result.message);
-      console.log('\nYou can now add tasks with: ');
-      console.log(' npx kanban add "Task title" --desc "Task description"');
+      console.log('\nYou can now add tasks with:');
+      console.log('  kanli add "Task title" --desc "Task description"');
     } else {
       displayError(result.message);
     }

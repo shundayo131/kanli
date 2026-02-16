@@ -1,39 +1,38 @@
 // command handling logic
 import minimist from 'minimist'
-import { 
-  handleAddCommand, 
-  handleInitCommand, 
-  handleListCommand, 
+import {
+  handleAddCommand,
+  handleInitCommand,
+  handleListCommand,
   handleMoveCommand,
   handleCompleteCommand,
-  handleDeleteCommand, 
+  handleDeleteCommand,
+  handleShowCommand,
 } from './handlers/index.js'
 import { isInitialized } from './storage.js';
 import { showHelp } from './util/showHelp.js';
 import { showVersion } from './util/version.js';
 import { displayError, displayInitInstructions } from './display.js';
-import { TaskState, CommandArgs } from './types.js';
+import { CommandArgs } from './types.js';
 
-const argv = minimist(process.argv.slice(2));
-
-// Parse command line arguments 
+// Parse command line arguments
 const parseArg = (): CommandArgs => {
   return minimist(process.argv.slice(2), {
-    boolean: ['help', 'version'], // Flags
-    string: ['desc'], // Treat as string 
+    boolean: ['help', 'version'],
+    string: ['desc'],
     alias: {
       d: 'desc',
       h: 'help',
       v: 'version',
     }
-  }) as CommandArgs; 
+  }) as CommandArgs;
 }
 
-// Process command 
+// Process command
 const processCommand = async (args: CommandArgs): Promise<void> => {
   const command = args._[0];
 
-  // Handle help and version flags 
+  // Handle help and version flags
   if (args.help) {
     showHelp();
     return;
@@ -45,59 +44,58 @@ const processCommand = async (args: CommandArgs): Promise<void> => {
     return;
   }
 
-  // Rerutn error message if kanban is not initalized AND the command is not init or undefined
+  // Return error message if kanban is not initialized AND the command is not init or undefined
   const initialized = await isInitialized();
-  if (!initialized && command !== 'init' && command !== 'undefined') {
-    displayError('Kanban board has not been initalized.');
+  if (!initialized && command !== 'init' && command !== undefined) {
+    displayError('Kanban board has not been initialized.');
     displayInitInstructions();
     return;
   }
 
-  // Process specific commands 
+  // Process specific commands
   switch (command) {
-    // Init 
     case 'init':
       await handleInitCommand();
       break;
 
-    // Add
     case 'add':
+    case 'a':
       await handleAddCommand(args);
       break;
 
-    // list 
     case 'list':
+    case 'ls':
       await handleListCommand(args);
       break;
 
-    // move 
+    case 'show':
+      await handleShowCommand(args);
+      break;
+
     case 'move':
+    case 'mv':
       await handleMoveCommand(args);
       break;
 
-    // complete 
     case 'complete':
-      await handleCompleteCommand(args); 
+    case 'done':
+      await handleCompleteCommand(args);
       break;
 
-    // delete
     case 'delete':
+    case 'rm':
       await handleDeleteCommand(args);
       break;
 
-    // undefined
     case undefined:
-      // No command provided
       if (initialized) {
-        // if already initialized, show all tasks by default 
         await handleListCommand(args);
       } else {
-        // if not initialized, show help and init instruction 
         showHelp();
         displayInitInstructions();
       }
-    
-    // default 
+      break;
+
     default:
       displayError(`Unknown command: ${command}`);
       showHelp();
@@ -105,14 +103,13 @@ const processCommand = async (args: CommandArgs): Promise<void> => {
   }
 }
 
-// Main function 
+// Main function
 const main = async (): Promise<void> => {
   try {
     const args = parseArg();
     await processCommand(args);
   } catch (e) {
-    // Display error - to be updated 
-    displayError(`${e instanceof Error ? e.message : String(e)}`); 
+    displayError(e instanceof Error ? e.message : String(e));
   }
 };
 
