@@ -1,6 +1,7 @@
 import { moveTask } from "../storage.js";
 import { displayError, displaySuccess, displayTask } from "../display.js";
-import { CommandArgs, resolveState } from "../types.js";
+import { CommandArgs } from "../types.js";
+import { resolveState } from "../util/stateUtils.js";
 
 export const handleMoveCommand = async (args: CommandArgs): Promise<void> => {
   const id = args._[1];

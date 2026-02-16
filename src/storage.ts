@@ -3,6 +3,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { Task, TaskState, InitResult } from './types.js';
+import { VALID_STATES } from './util/stateUtils.js';
 
 // Configuration 
 const DATA_DIR = '.kanban';
@@ -139,7 +140,7 @@ export const moveTask = async (id: string, state: string): Promise<Task> => {
     await ensureInitialized();
     
     // if state is invalid, return error 
-    if (!['todo', 'in_progress', 'done'].includes(state)) {
+    if (!VALID_STATES.includes(state as TaskState)) {
       throw new Error('Invalid state. Must be "todo", "in_progress", or "done"');
     }
     
