@@ -1,76 +1,105 @@
 ### Kanli
 
-Kanli (管理) means 'manage' in Japanese. This is a simple command line Kanban board to manage your programming tasks. 
+Kanli (管理) means 'manage' in Japanese. This is a simple command-line Kanban board to manage your programming tasks.
 
-### Version 
+### Version
 
 v0.1.1
 
-### Tech Stack 
+### Tech Stack
 
-- TypeScript  
+- TypeScript
 - Node.js (ES Modules)
 - minimist (command-line argument parsing)
-- Chalk (terminal output)
+- Chalk (terminal styling)
 
-### Features 
+### Features
 
-- Initialize a project-specific Kanban board
+- Initialize a project-specific Kanban board with local JSON storage (`.kanban/tasks.json`)
 - Create tasks with titles and optional descriptions
-- View tasks organized by state (Todo, In Progress, Done)
-- Move tasks between states
+- View tasks organized by state (Todo, In Progress, Done) with color-coded columns
+- Show detailed task information including timestamps
+- Move tasks between states with flexible state aliases (`wip`, `progress`, `ip` for `in_progress`)
 - Mark tasks as complete
 - Delete tasks
-- Local JSON storage (.kanban/tasks.json)
+- Short command aliases for faster workflow (`a`, `ls`, `mv`, `done`, `rm`)
+- Running `kanli` with no command displays the board automatically
 
-### Feature backlog 
+### What's new in v0.1.1
+
+- Codebase migrated from JavaScript to TypeScript with strict type safety
+- Modularized architecture with dedicated handlers for each command
+- Added `show` command for detailed task view with formatted timestamps
+- Added short command aliases (`a`, `ls`, `mv`, `done`, `rm`)
+- Improved error handling and user-friendly error messages
+- Color-coded Kanban board display with state icons
+
+### Feature backlog
 
 - Add `edit` command to allow editing task title and description
-- Update `list` command to show description with a table view. 
-- Implement detailed task view with kanban `show <id>` command
+- Update `list` command with table view
 - Add unit and integration tests with Jest
-
-### What's new in version 0.1.1
-
-- Codebase migrated from JavaScript to TypeScript
-- Improved type safety with TypeScript interfaces
-- Better error handling
 
 ### Usage
 
 ```bash
-# After installation, use one of these patterns depending on how you installed:
-# - If installed globally: kanban <command>
-# - If using npx: npx kanban-cli <command>
-# - If installed locally: npx kanban <command>
-
-# Initialize
-kanban init
+# Initialize a kanban board in your project
+kanli init
 
 # Add tasks
-kanban add "Task title" --desc "Optional description"
+kanli add "Task title"
+kanli add "Task title" --desc "Optional description"
+kanli a "Quick add"
 
 # List tasks
-kanban list
-kanban list todo
-kanban list in_progress
-kanban list done
+kanli list              # Show all tasks
+kanli ls todo           # Filter by state
+kanli ls in_progress    # or: wip, progress, ip
+kanli ls done
 
-# Update tasks
-kanban move <id> in_progress
-kanban complete <id>
-kanban delete <id>
+# Show task details
+kanli show <id>
 
-# Help 
-kanban -help
-kanban -h
+# Move tasks between states
+kanli move <id> in_progress
+kanli mv <id> wip
 
-# Version
-kanban --version
-kanban -v
+# Mark task as complete
+kanli complete <id>
+kanli done <id>
 
+# Delete a task
+kanli delete <id>
+kanli rm <id>
+
+# Help & version
+kanli --help    # or: -h
+kanli --version # or: -v
 ```
 
-### License 
+### Project Structure
+
+```
+src/
+├── index.ts            # CLI entry point
+├── command.ts          # Command routing & argument parsing
+├── storage.ts          # JSON file operations & task CRUD
+├── display.ts          # Terminal UI & formatting
+├── types.ts            # TypeScript interfaces
+├── handlers/           # Modular command handlers
+│   ├── init.ts
+│   ├── add.ts
+│   ├── list.ts
+│   ├── show.ts
+│   ├── move.ts
+│   ├── complete.ts
+│   └── delete.ts
+└── util/               # Shared utilities
+    ├── showHelp.ts
+    ├── stateUtils.ts
+    └── version.ts
+```
+
+### License
 
 MIT

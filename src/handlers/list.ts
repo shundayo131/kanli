@@ -1,6 +1,7 @@
 import { listTasks } from '../storage.js';
 import { displayTaskList, displayError } from '../display.js';
-import { CommandArgs, resolveState } from '../types.js';
+import { CommandArgs } from '../types.js';
+import { resolveState } from '../util/stateUtils.js';
 
 export const handleListCommand = async (args: CommandArgs): Promise<void> => {
   const stateInput = args._[1];
